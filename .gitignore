@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/vue,node,visualstudiocode
-# Edit at https://www.toptal.com/developers/gitignore?templates=vue,node,visualstudiocode
+# Created by https://www.toptal.com/developers/gitignore/api/vue,visualstudiocode,node
+# Edit at https://www.toptal.com/developers/gitignore?templates=vue,visualstudiocode,node
 
 ### Node ###
 # Logs
@@ -171,4 +171,4 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
-# End of https://www.toptal.com/developers/gitignore/api/vue,node,visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/vue,visualstudiocode,node
