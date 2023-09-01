@@ -1,13 +1,26 @@
 <template>
-  <div class="input-box shadow">
-    <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo" />
-    <span class="add-container" v-on:click="addTodo">
-      <i class="fa-solid fa-plus add-btn"></i>
-    </span>
+  <div>
+    <div class="input-box shadow">
+      <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo" />
+      <span class="add-container" v-on:click="addTodo">
+        <i class="fa-solid fa-plus add-btn"></i>
+      </span>
+    </div>
+    <Modal v-bind:showModal="showModal">
+      <template v-slot:header>Warning</template>
+      <template v-slot:body>내용을 입력해주세요.</template>
+      <template v-slot:closed>
+        <span @click="closeModal">
+          <i class="fa-solid fa-minus"></i>
+        </span>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script>
+import Modal from "./Modal.vue";
+
 const createTodoItem = (() => {
   let id = 0;
   return (content) => {
@@ -28,6 +41,9 @@ export default {
       newTodoItem: "",
     };
   },
+  components: {
+    Modal: Modal,
+  },
   methods: {
     addTodo: function () {
       const todoItem = createTodoItem(this.newTodoItem);
@@ -37,6 +53,9 @@ export default {
     },
     clearInput: function () {
       this.newTodoItem = "";
+    },
+    closeModal: function () {
+      this.showModal = false;
     },
   },
 };
