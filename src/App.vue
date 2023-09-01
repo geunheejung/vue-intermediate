@@ -12,14 +12,39 @@ export default {
     TodoList: TodoList,
     TodoFooter: TodoFooter,
   },
+  data: function () {
+    return {
+      todoItems: [],
+    };
+  },
+  created: function () {
+    if (!localStorage.length) return;
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+
+      this.todoItems.push(key);
+    }
+  },
+  methods: {
+    addTodoItem: function (newTodoItem) {
+      this.todoItems.push(newTodoItem);
+    },
+    removeTodoItem: function (removeTodoItem) {
+      this.todoItems = this.todoItems.filter((todo) => todo !== removeTodoItem);
+    },
+  },
 };
 </script>
 
 <template>
   <div>
     <TodoHeader></TodoHeader>
-    <TodoInput></TodoInput>
-    <TodoList></TodoList>
+    <TodoInput @addTodoItem="addTodoItem"></TodoInput>
+    <TodoList
+      v-bind:todo-list="todoItems"
+      @removeTodoItem="removeTodoItem"
+    ></TodoList>
     <TodoFooter></TodoFooter>
   </div>
 </template>
