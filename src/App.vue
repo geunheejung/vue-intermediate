@@ -14,6 +14,7 @@ export default {
   },
   data: function () {
     return {
+      todoTitle: "Default Todo",
       todoItems: [],
       condition: "all",
     };
@@ -60,10 +61,12 @@ export default {
 
 <template>
   <div>
-    <TodoHeader
-      @filterTodoList="filterTodoList"
-      v-bind:condition="condition"
-    ></TodoHeader>
+    <TodoHeader @filterTodoList="filterTodoList" v-bind:condition="condition">
+      <i class="fa-solid fa-gamepad"></i>{{ todoTitle }}
+      <template v-slot:date="{ date, prefix = 'Today' }">
+        {{ prefix }}{{ date }}
+      </template>
+    </TodoHeader>
     <TodoInput @addTodoItem="addTodoItem"></TodoInput>
     <TodoList
       v-bind:todo-list="filteredTodoItems"
@@ -72,7 +75,7 @@ export default {
     ></TodoList>
     <TodoFooter>
       <template v-slot:left>
-        <p>{{ todoItems.length ? todoItems[0].content : "Empty" }}</p>
+        <h3>{{ todoItems.length ? todoItems[0].content : "Empty" }}</h3>
       </template>
       <template v-slot:right>
         <p>{{ condition }}</p>
