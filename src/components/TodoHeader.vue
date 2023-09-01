@@ -1,6 +1,7 @@
 <template>
   <header>
-    <h1>Todo it!</h1>
+    <h1><slot>Default</slot> it!</h1>
+    <slot name="date" v-bind:date="date"></slot>
     <ul class="todo-filter">
       <ol
         @click="filterTodoList('all')"
@@ -28,6 +29,11 @@
 // 필터 -> 미완성, 완성
 export default {
   props: ["condition"],
+  data: function () {
+    return {
+      date: "YYYY-MM-DD",
+    };
+  },
   methods: {
     filterTodoList: function (condition) {
       this.$emit("filterTodoList", condition);

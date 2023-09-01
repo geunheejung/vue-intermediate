@@ -1,23 +1,15 @@
 <template>
-  <transition name="modal" v-if="showModal">
-    <div class="modal-mask">
+  <transition name="modal">
+    <div class="modal-mask" v-if="showModal">
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
             <slot name="header"> default header </slot>
+            <slot name="closed"></slot>
           </div>
 
           <div class="modal-body">
             <slot name="body"> default body </slot>
-          </div>
-
-          <div class="modal-footer">
-            <slot name="footer">
-              default footer
-              <button class="modal-default-button" @click="$emit('close')">
-                OK
-              </button>
-            </slot>
           </div>
         </div>
       </div>
@@ -31,7 +23,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -82,17 +74,32 @@ export default {
  * these styles.
  */
 
-.modal-enter {
+/* .modal-enter {
   opacity: 0;
 }
 
 .modal-leave-active {
   opacity: 0;
-}
+} */
 
+/*
 .modal-enter .modal-container,
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+} */
+
+/* enter 에 대한 활성 및 종료 상태. 엘리먼트가 삽입되기 전에 적용되며, 트랜지션 / 애니메이션이 완료되면 제거 */
+.modal-enter-active {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 1;
+}
+
+.modal-enter,
+.modal-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,15 +1,18 @@
 <template>
-  <div class="input-box shadow">
-    <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo" />
-    <span class="add-container" v-on:click="addTodo">
-      <i class="fa-solid fa-plus add-btn"></i>
-    </span>
-
+  <div>
+    <div class="input-box shadow">
+      <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo" />
+      <span class="add-container" v-on:click="addTodo">
+        <i class="fa-solid fa-plus add-btn"></i>
+      </span>
+    </div>
     <Modal v-bind:showModal="showModal">
       <template v-slot:header>Warning</template>
       <template v-slot:body>내용을 입력해주세요.</template>
-      <template v-slot:footer>
-        <button @click="closeModal">Close</button>
+      <template v-slot:closed>
+        <span @click="closeModal">
+          <i class="fa-solid fa-minus"></i>
+        </span>
       </template>
     </Modal>
   </div>
@@ -38,6 +41,9 @@ export default {
       newTodoItem: "",
       showModal: false,
     };
+  },
+  components: {
+    Modal: Modal,
   },
   methods: {
     addTodo: function () {
