@@ -4,10 +4,20 @@
     <span class="add-container" v-on:click="addTodo">
       <i class="fa-solid fa-plus add-btn"></i>
     </span>
+
+    <Modal v-bind:showModal="showModal">
+      <template v-slot:header>Warning</template>
+      <template v-slot:body>내용을 입력해주세요.</template>
+      <template v-slot:footer>
+        <button @click="closeModal">Close</button>
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script>
+import Modal from "./Modal.vue";
+
 const createTodoItem = (() => {
   let id = 0;
   return (content) => {
@@ -26,10 +36,16 @@ export default {
   data: function () {
     return {
       newTodoItem: "",
+      showModal: false,
     };
   },
   methods: {
     addTodo: function () {
+      if (!this.newTodoItem || !this.newTodoItem.trim()) {
+        this.showModal = true;
+        return;
+      }
+
       const todoItem = createTodoItem(this.newTodoItem);
       localStorage.setItem(todoItem.id, JSON.stringify(todoItem));
       this.$emit("addTodoItem", todoItem);
@@ -38,6 +54,12 @@ export default {
     clearInput: function () {
       this.newTodoItem = "";
     },
+    closeModal: function () {
+      this.showModal = false;
+    },
+  },
+  components: {
+    Modal: Modal,
   },
 };
 </script>

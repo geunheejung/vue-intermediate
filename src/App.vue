@@ -70,7 +70,14 @@ export default {
       @removeTodoItem="removeTodoItem"
       @toggleTodoItem="toggleTodoItem"
     ></TodoList>
-    <TodoFooter></TodoFooter>
+    <TodoFooter>
+      <template v-slot:left>
+        <p>{{ todoItems.length ? todoItems[0].content : "Empty" }}</p>
+      </template>
+      <template v-slot:right>
+        <p>{{ condition }}</p>
+      </template>
+    </TodoFooter>
   </div>
 </template>
 
