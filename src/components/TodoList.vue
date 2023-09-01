@@ -1,9 +1,22 @@
 <template>
   <div>
     <ul>
-      <li v-for="todoItem in todoList" v-bind:key="todoItem" class="shadow">
-        {{ todoItem }}
-        <span class="remove-btn" @click="removeTodo(todoItem)">
+      <li
+        v-for="(todoItem, index) in todoList"
+        v-bind:key="todoItem.content"
+        @click="toggleTodo(todoItem, index)"
+        v-bind:class="{ 'text-completed': todoItem.isCompleted }"
+        class="shadow"
+      >
+        <span
+          v-bind:class="{ 'check-btn-completed': todoItem.isCompleted }"
+          class="check-btn"
+          @click="toggleTodo(todoItem, index)"
+        >
+          <i class="fa-solid fa-check"></i>
+        </span>
+        {{ todoItem.content }}
+        <span class="remove-btn" @click="removeTodo(todoItem, index)">
           <i class="fa-solid fa-trash"></i>
         </span>
       </li>
@@ -16,15 +29,20 @@ export default {
   props: ["todoList"],
   methods: {
     removeTodo: function (todoItem) {
-      localStorage.removeItem(todoItem);
+      localStorage.removeItem(todoItem.id);
       this.$emit("removeTodoItem", todoItem);
     },
+    toggleTodo: function (todoItem, index) {
+      /**
+       * 클릭된 todoItem을 toggle한다.
+       */
+      this.$emit("toggleTodoItem", index);
+    },
   },
-  // 여기서 로컬 스토리지에 어떻게 접근해야 하지? 차라리 todoList를 props로 전달받고 상위에서 관리하게 하면?
 };
 </script>
 
-<style>
+<style scoped>
 ul {
   list-style-type: none;
   padding: 0;
@@ -34,7 +52,6 @@ ul {
 
 li {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   min-height: 50px;
   height: 50px;
@@ -42,8 +59,10 @@ li {
   padding: 0 0.9rem;
   background: #fff;
   border-radius: 5px;
+  cursor: pointer;
 }
 .check-btn {
+  cursor: pointer;
   line-height: 45px;
   color: #62acde;
   margin-right: 5px;
@@ -57,6 +76,7 @@ li {
 }
 
 .remove-btn {
+  margin-left: auto;
   cursor: pointer;
   color: #de4343;
 }

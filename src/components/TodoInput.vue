@@ -8,6 +8,17 @@
 </template>
 
 <script>
+const createTodoItem = (() => {
+  let id = 0;
+  return (content) => {
+    return {
+      id: id++,
+      content,
+      isCompleted: false,
+    };
+  };
+})();
+
 export default {
   // props: {
   //   addTodoItem: Function,
@@ -19,8 +30,9 @@ export default {
   },
   methods: {
     addTodo: function () {
-      localStorage.setItem(this.newTodoItem, this.newTodoItem);
-      this.$emit("addTodoItem", this.newTodoItem);
+      const todoItem = createTodoItem(this.newTodoItem);
+      localStorage.setItem(todoItem.id, JSON.stringify(todoItem));
+      this.$emit("addTodoItem", todoItem);
       this.clearInput();
     },
     clearInput: function () {
@@ -30,7 +42,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .input-box input:focus {
   outline: none;
 }

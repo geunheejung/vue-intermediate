@@ -15,6 +15,7 @@ export default {
   data: function () {
     return {
       todoItems: [],
+      condition: "all",
     };
   },
   created: function () {
@@ -22,8 +23,10 @@ export default {
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const todoItem = JSON.parse(value);
 
-      this.todoItems.push(key);
+      this.todoItems.push(todoItem);
     }
   },
   methods: {
@@ -31,7 +34,25 @@ export default {
       this.todoItems.push(newTodoItem);
     },
     removeTodoItem: function (removeTodoItem) {
-      this.todoItems = this.todoItems.filter((todo) => todo !== removeTodoItem);
+      const { id } = removeTodoItem;
+      this.todoItems = this.todoItems.filter((todo, index) => todo.id !== id);
+    },
+    toggleTodoItem: function (targetIndex) {
+      this.todoItems[targetIndex].isCompleted =
+        !this.todoItems[targetIndex].isCompleted;
+    },
+    filterTodoList: function (condition) {
+      this.condition = condition;
+    },
+  },
+  computed: {
+    filteredTodoItems: function () {
+      const { todoItems, condition } = this;
+
+      if (condition === "all") return todoItems;
+      return todoItems.filter(({ isCompleted }) =>
+        condition === "completed" ? isCompleted : !isCompleted
+      );
     },
   },
 };
@@ -39,11 +60,15 @@ export default {
 
 <template>
   <div>
-    <TodoHeader></TodoHeader>
+    <TodoHeader
+      @filterTodoList="filterTodoList"
+      v-bind:condition="condition"
+    ></TodoHeader>
     <TodoInput @addTodoItem="addTodoItem"></TodoInput>
     <TodoList
-      v-bind:todo-list="todoItems"
+      v-bind:todo-list="filteredTodoItems"
       @removeTodoItem="removeTodoItem"
+      @toggleTodoItem="toggleTodoItem"
     ></TodoList>
     <TodoFooter></TodoFooter>
   </div>
