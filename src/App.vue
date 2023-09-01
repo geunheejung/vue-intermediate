@@ -1,53 +1,77 @@
-<script setup>
-import HelloWorld from "./components/HelloWorld.vue";
-import TheWelcome from "./components/TheWelcome.vue";
+<script>
+// setup 키워드 등록 안해줄 경우 템플릿에서 직접 사용할 수 없기에 직접 연결해줘야 하는듯.
+import TodoHeader from "./components/TodoHeader.vue";
+import TodoInput from "./components/TodoInput.vue";
+import TodoList from "./components/TodoList.vue";
+import TodoFooter from "./components/TodoFooter.vue";
+
+export default {
+  components: {
+    TodoHeader: TodoHeader,
+    TodoInput: TodoInput,
+    TodoList: TodoList,
+    TodoFooter: TodoFooter,
+  },
+  data: function () {
+    return {
+      todoItems: [],
+      condition: "all",
+    };
+  },
+  created: function () {
+    if (!localStorage.length) return;
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const todoItem = JSON.parse(value);
+
+      this.todoItems.push(todoItem);
+    }
+  },
+  methods: {
+    addTodoItem: function (newTodoItem) {
+      this.todoItems.push(newTodoItem);
+    },
+    removeTodoItem: function (removeTodoItem) {
+      const { id } = removeTodoItem;
+      this.todoItems = this.todoItems.filter((todo, index) => todo.id !== id);
+    },
+    toggleTodoItem: function (targetIndex) {
+      this.todoItems[targetIndex].isCompleted =
+        !this.todoItems[targetIndex].isCompleted;
+    },
+    filterTodoList: function (condition) {
+      this.condition = condition;
+    },
+  },
+  computed: {
+    filteredTodoItems: function () {
+      const { todoItems, condition } = this;
+
+      if (condition === "all") return todoItems;
+      return todoItems.filter(({ isCompleted }) =>
+        condition === "completed" ? isCompleted : !isCompleted
+      );
+    },
+  },
+};
 </script>
 
 <template>
-  <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <TodoHeader
+      @filterTodoList="filterTodoList"
+      v-bind:condition="condition"
+    ></TodoHeader>
+    <TodoInput @addTodoItem="addTodoItem"></TodoInput>
+    <TodoList
+      v-bind:todo-list="filteredTodoItems"
+      @removeTodoItem="removeTodoItem"
+      @toggleTodoItem="toggleTodoItem"
+    ></TodoList>
+    <TodoFooter></TodoFooter>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style scoped></style>
