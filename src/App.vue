@@ -15,6 +15,7 @@ export default {
   data: function () {
     return {
       todoItems: [],
+      condition: "all",
     };
   },
   created: function () {
@@ -40,16 +41,32 @@ export default {
       this.todoItems[targetIndex].isCompleted =
         !this.todoItems[targetIndex].isCompleted;
     },
+    filterTodoList: function (condition) {
+      this.condition = condition;
+    },
+  },
+  computed: {
+    filteredTodoItems: function () {
+      const { todoItems, condition } = this;
+
+      if (condition === "all") return todoItems;
+      return todoItems.filter(({ isCompleted }) =>
+        condition === "completed" ? isCompleted : !isCompleted
+      );
+    },
   },
 };
 </script>
 
 <template>
   <div>
-    <TodoHeader></TodoHeader>
+    <TodoHeader
+      @filterTodoList="filterTodoList"
+      v-bind:condition="condition"
+    ></TodoHeader>
     <TodoInput @addTodoItem="addTodoItem"></TodoInput>
     <TodoList
-      v-bind:todo-list="todoItems"
+      v-bind:todo-list="filteredTodoItems"
       @removeTodoItem="removeTodoItem"
       @toggleTodoItem="toggleTodoItem"
     ></TodoList>
