@@ -22,8 +22,10 @@ export default {
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
+      const value = localStorage.getItem(key);
+      const todoItem = JSON.parse(value);
 
-      this.todoItems.push(key);
+      this.todoItems.push(todoItem);
     }
   },
   methods: {
@@ -31,7 +33,12 @@ export default {
       this.todoItems.push(newTodoItem);
     },
     removeTodoItem: function (removeTodoItem) {
-      this.todoItems = this.todoItems.filter((todo) => todo !== removeTodoItem);
+      const { id } = removeTodoItem;
+      this.todoItems = this.todoItems.filter((todo, index) => todo.id !== id);
+    },
+    toggleTodoItem: function (targetIndex) {
+      this.todoItems[targetIndex].isCompleted =
+        !this.todoItems[targetIndex].isCompleted;
     },
   },
 };
@@ -44,6 +51,7 @@ export default {
     <TodoList
       v-bind:todo-list="todoItems"
       @removeTodoItem="removeTodoItem"
+      @toggleTodoItem="toggleTodoItem"
     ></TodoList>
     <TodoFooter></TodoFooter>
   </div>
