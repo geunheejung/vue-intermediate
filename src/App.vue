@@ -6,6 +6,9 @@ import TodoHeader from "./components/TodoHeader.vue";
 import TodoInput from "./components/TodoInput.vue";
 import TodoList from "./components/TodoList.vue";
 import TodoFooter from "./components/TodoFooter.vue";
+import { types } from "./modules/Todo";
+import { FILTER_KEYWORD } from "./types/todo";
+import { FETCH_STATUS } from "./modules/common";
 
 export default {
   components: {
@@ -18,36 +21,32 @@ export default {
   data: function () {
     return {
       todoTitle: "Default Todo",
-      todoItems: [],
-      condition: "all",
     };
   },
   created: function () {
-    this.$store.dispatch("fetchTodoList");
+    this.$store.dispatch(types.FETCH_TODO_LIST);
   },
   methods: {
     addTodoItem: function (newTodoItem) {
-      this.todoItems.push(newTodoItem);
+      this.$store.dispatch(types.ADD_TODO_ITEM, newTodoItem);
     },
     removeTodoItem: function (removeTodoItem) {
-      const { id } = removeTodoItem;
-      this.todoItems = this.todoItems.filter((todo, index) => todo.id !== id);
+      this.$store.dispatch(types.REMOVE_TODO_ITEM, removeTodoItem);
     },
     toggleTodoItem: function (targetIndex) {
-      this.todoItems[targetIndex].isCompleted =
-        !this.todoItems[targetIndex].isCompleted;
+      this.$store.dispatch(types.TOGGLE_TODO_ITEM, targetIndex);
     },
-    filterTodoList: function (condition) {
-      this.condition = condition;
+    filterTodoList: function (filterKeyword) {
+      this.$store.dispatch(types.SET_FILTER_KEYWORD, filterKeyword);
     },
   },
   computed: {
     filteredTodoItems: function () {
-      const { todoList, condition } = this;
+      const { todoList, filterKeyword } = this;
 
-      if (condition === "all") return todoList;
+      if (filterKeyword === FILTER_KEYWORD.ALL) return todoList;
       return todoList.filter(({ isCompleted }) =>
-        condition === "completed" ? isCompleted : !isCompleted
+        filterKeyword === FILTER_KEYWORD.COMPLETED ? isCompleted : !isCompleted
       );
     },
     todoList: function () {
@@ -57,12 +56,15 @@ export default {
 
       return todoList;
     },
+    filterKeyword: function () {
+      return this.$store.state.filterKeyword;
+    },
     isCompletedFetching: function () {
       const {
         state: { status },
       } = this.$store;
 
-      return status === "SUCCESS";
+      return status === FETCH_STATUS.SUCCESS;
     },
   },
 };
@@ -70,25 +72,14 @@ export default {
 
 <template>
   <div>
-    <div
-      style="
-         {
-          width: 30px;
-          height: 30px;
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: 0;
-          bottom: 0;
-          margin: auto;
-        }
-      "
-      v-if="!isCompletedFetching"
-    >
+    <div class="spinner" v-if="!isCompletedFetching">
       <span>Loading...</span>
     </div>
     <div v-if="isCompletedFetching">
-      <TodoHeader @filterTodoList="filterTodoList" v-bind:condition="condition">
+      <TodoHeader
+        @filterTodoList="filterTodoList"
+        v-bind:condition="filterKeyword"
+      >
         <i class="fa-solid fa-gamepad"></i>{{ todoTitle }}
         <template v-slot:date="{ date, prefix = 'Today' }">
           {{ prefix }}{{ date }}
@@ -100,23 +91,20 @@ export default {
         @removeTodoItem="removeTodoItem"
         @toggleTodoItem="toggleTodoItem"
       ></TodoList>
-      <TodoFooter>
-        <template v-slot:left>
-          <h3>{{ todoItems.length ? todoItems[0].content : "Empty" }}</h3>
-        </template>
-        <template v-slot:right>
-          <p>{{ condition }}</p>
-        </template>
-      </TodoFooter>
+      <TodoFooter> </TodoFooter>
     </div>
   </div>
 </template>
 
 <style scoped>
-.test {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 1rem;
+.spinner {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
 </style>
