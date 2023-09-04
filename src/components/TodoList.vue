@@ -4,7 +4,6 @@
       <li
         v-for="(todoItem, index) in todoList"
         v-bind:key="todoItem.content"
-        @click="toggleTodo(todoItem, index)"
         v-bind:class="{ 'text-completed': todoItem.isCompleted }"
         class="shadow"
       >

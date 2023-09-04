@@ -1,37 +1,30 @@
 import { createStore } from "vuex";
+import { FilterKeywordType, ITodo, TodoListType } from "../types/todo";
+import { StatusType, FETCH_STATUS } from "./common";
+import { getTodoList } from "../services/todo";
 
-const api = {
-  getTodoList: () => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (!localStorage.length) resolve([]);
-
-        const todoList: Array<{ content: string; isCompleted: boolean }> = [];
-
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i) as string;
-          const value = localStorage.getItem(key) as string;
-          const todoItem = JSON.parse(value);
-
-          todoList.push(todoItem);
-        }
-
-        resolve(todoList);
-      }, 1000);
-    });
-  },
-};
-
-const types = {
+export const types = {
   SET_TODO_LIST: "SET_TODO_LIST",
   CHANGE_STATUS: "CHANGE_STATUS",
+  ADD_TODO_ITEM: "ADD_TODO_ITEM",
+  REMOVE_TODO_ITEM: "REMOVE_TODO_ITEM",
+  TOGGLE_TODO_ITEM: "TOGGLE_TODO_ITEM",
+  SET_FILTER_KEYWORD: "SET_FILTER_KEYWORD",
+  FETCH_TODO_LIST: "FETCH_TODO_LIST",
 };
 
-const Todo = createStore({
+export interface IInitialState {
+  todoList: TodoListType;
+  status: StatusType;
+  filterKeyword: FilterKeywordType;
+}
+
+const Todo = createStore<IInitialState>({
   state: () => {
     return {
       todoList: [],
       status: "REQUEST",
+      filterKeyword: "ALL",
     };
   },
   mutations: {
@@ -41,23 +34,44 @@ const Todo = createStore({
     [types.CHANGE_STATUS](state, newStatus) {
       state.status = newStatus;
     },
+    [types.ADD_TODO_ITEM](state, newTodoItem: ITodo) {
+      state.todoList.push(newTodoItem);
+    },
+    [types.REMOVE_TODO_ITEM](state, removeTodoItem: ITodo) {
+      state.todoList = state.todoList.filter(
+        (todo) => todo.id !== removeTodoItem.id
+      );
+    },
+    [types.TOGGLE_TODO_ITEM](state, toggleTodoIndex: number) {
+      state.todoList[toggleTodoIndex].isCompleted =
+        !state.todoList[toggleTodoIndex].isCompleted;
+    },
+    [types.SET_FILTER_KEYWORD](state, filterKeyword: FilterKeywordType) {
+      state.filterKeyword = filterKeyword;
+    },
   },
-  // 상태를 변경하는 대신 액션으로 변경의 대한 커밋을 한다.
-  // 작업에는 임의의 비동기 작업이 포함될 수 있다.
   actions: {
-    // 액션 핸들러는 저장소 인스턴스의 같은 메서드, 프로퍼티 세트를 드러내는 컨텍스트 객체를 받는다.
-    // context.commit 을 호출하여 mutation을 커밋하거나 context.state 와 context.getters 를 통해 상태, getter에 접근 가능하다.
-    async fetchTodoList(context) {
+    async [types.FETCH_TODO_LIST](context) {
       try {
-        context.commit(types.CHANGE_STATUS, "REQUEST");
-        const todoList = await api.getTodoList();
-        // 저장소는 단일 출처이니, 현재 모듈의 대한 context인듯.
-        // commit은 mutation에게 변경의 대한 정보와 함께 변경을 요청.
+        context.commit(types.CHANGE_STATUS, FETCH_STATUS.REQUEST);
+        const todoList = await getTodoList();
         context.commit(types.SET_TODO_LIST, todoList);
-        context.commit(types.CHANGE_STATUS, "SUCCESS");
+        context.commit(types.CHANGE_STATUS, FETCH_STATUS.SUCCESS);
       } catch (error) {
-        context.commit(types.CHANGE_STATUS, "FAILURE");
+        context.commit(types.CHANGE_STATUS, FETCH_STATUS.FAILURE);
       }
+    },
+    [types.ADD_TODO_ITEM](context, payload) {
+      context.commit(types.ADD_TODO_ITEM, payload);
+    },
+    [types.REMOVE_TODO_ITEM](context, payload) {
+      context.commit(types.REMOVE_TODO_ITEM, payload);
+    },
+    [types.TOGGLE_TODO_ITEM](context, payload) {
+      context.commit(types.TOGGLE_TODO_ITEM, payload);
+    },
+    [types.SET_FILTER_KEYWORD](context, payload) {
+      context.commit(types.SET_FILTER_KEYWORD, payload);
     },
   },
 });

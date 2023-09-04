@@ -4,20 +4,21 @@
     <slot name="date" v-bind:date="date"></slot>
     <ul class="todo-filter">
       <ol
-        @click="filterTodoList('all')"
-        v-bind:class="{ active: condition === 'all' }"
+        @click="filterTodoList(FILTER_KEYWORD.ALL)"
+        v-bind:class="{ active: condition === FILTER_KEYWORD.ALL }"
       >
         All
       </ol>
+
       <ol
-        @click="filterTodoList('completed')"
-        v-bind:class="{ active: condition === 'completed' }"
+        @click="filterTodoList(FILTER_KEYWORD.COMPLETED)"
+        v-bind:class="{ active: condition === FILTER_KEYWORD.COMPLETED }"
       >
         Completed
       </ol>
       <ol
-        @click="filterTodoList('inCompleted')"
-        v-bind:class="{ active: condition === 'isCompleted' }"
+        @click="filterTodoList(FILTER_KEYWORD.IN_COMPLETED)"
+        v-bind:class="{ active: condition === FILTER_KEYWORD.IN_COMPLETED }"
       >
         InCompleted
       </ol>
@@ -26,6 +27,7 @@
 </template>
 
 <script>
+import { FILTER_KEYWORD } from "../types/todo";
 // 필터 -> 미완성, 완성
 export default {
   props: ["condition"],
@@ -37,6 +39,11 @@ export default {
   methods: {
     filterTodoList: function (condition) {
       this.$emit("filterTodoList", condition);
+    },
+  },
+  computed: {
+    FILTER_KEYWORD: function () {
+      return FILTER_KEYWORD;
     },
   },
 };
