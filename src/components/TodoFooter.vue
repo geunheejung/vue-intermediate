@@ -1,6 +1,8 @@
 <template>
-  <div class="clear-all-container" @click="clearTodo">
-    <span class="clear-all-btn">Clear All</span>
+  <div>
+    <div class="clear-all-container" @click="clearTodo">
+      <span class="clear-all-btn">Clear All</span>
+    </div>
 
     <slot name="left">Left</slot>
     <slot name="right">Left</slot>
