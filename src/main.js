@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import todoStore from "./modules/Todo";
+import todoStore from "./store/todoStore";
 import App from "./App.vue";
 
 import "./assets/main.css";
